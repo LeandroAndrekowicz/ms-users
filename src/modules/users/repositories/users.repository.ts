@@ -3,42 +3,45 @@ import { CreateUserDto } from "../dtos/create-user.dto";
 import { UpdateUserDto } from "../dtos/update-user.dto";
 import { UserDto } from "../dtos/user.dto";
 import { randomUUID } from "node:crypto";
+import { PrismaService } from "src/modules/global/prisma/prisma.service";
 
 @Injectable()
 export class UsersRepository {
-    private users : UserDto[] = []
+    constructor (
+        private readonly prismaService : PrismaService
+    ) {}
     
-    create(user : CreateUserDto) {
+    async create(user : CreateUserDto) {
         const formatUser = {
-            id: randomUUID(),
             email: user.email,
             name: user.name
         }
 
-        this.users.push(formatUser);
+        await this.prismaService.users.create({
+            data: formatUser
+        })
 
         return formatUser;
     }
 
-    findAll() {
-        return this.users;
+    async findAll() {
+        return await this.prismaService.users.findMany();
     }
 
-    updateById(user: UpdateUserDto, userId : string) {
-        const foundUser = this.users.find(user => user.id === userId);
-
-        for (let key in user) {
-            foundUser[key] = user[key]
-        }
+    async updateById(user: UpdateUserDto, userId : string) {
+        const foundUser = await this.prismaService.users.update({
+            where: {
+                id: userId
+            },
+            data: user
+        })
 
         return foundUser;
     }
 
-    delete(userId: string) {
-        const index = this.users.findIndex((user) => user.id === userId);
-
-        this.users.splice(index, 1);
-
-        return 'Usuario deletado com sucesso!';
+    async delete(userId: string) {
+        return await this.prismaService.users.delete({
+            where: {id: userId}
+        })
     }
 }

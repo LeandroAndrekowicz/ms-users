@@ -9,19 +9,19 @@ export class UsersService {
         private readonly usersRepository : UsersRepository
     ) {}
 
-    findAll() {
-        return this.usersRepository.findAll();
+    async findAll() {
+        return await this.usersRepository.findAll();
     }
 
-    create(user : CreateUserDto) {
-        return this.usersRepository.create(user);
+    async create(user : CreateUserDto) {
+        return await this.usersRepository.create(user);
     }
 
-    update(user : UpdateUserDto, userId : string) {
-        return this.usersRepository.updateById(user, userId);
+    async update(user : UpdateUserDto, userId : string) {
+        return await this.usersRepository.updateById(user, userId);
     }
 
-    delete(userId : string) {
-        return this.usersRepository.delete(userId);
+    async delete(userId : string) {
+        return await this.usersRepository.delete(userId);
     }
 }
