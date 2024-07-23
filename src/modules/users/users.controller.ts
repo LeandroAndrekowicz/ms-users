@@ -7,12 +7,14 @@ import { ApiDocGenericPost } from "src/app/common/api-doc-post-generic.decorator
 import { ApiDocGenericGetAll } from "src/app/common/api-doc-generic-get-all.decorator";
 import { UserDto } from "./dtos/user.dto";
 import { ApiDocGenericPatch } from "src/app/common/api-doc-generic-patch.decorator";
+import { PubSubExternalService } from "../global/pubsub/pubsub.service";
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
     constructor (
-        private readonly usersService : UsersService
+        private readonly usersService : UsersService,
+        private readonly pubSubService : PubSubExternalService
     ) {}
 
     @ApiDocGenericPost('user', CreateUserDto)
@@ -20,7 +22,11 @@ export class UsersController {
     async create(
         @Body('') body : CreateUserDto
     ) {
-        return await this.usersService.create(body);
+        const userCreated = await this.usersService.create(body);
+
+        await this.pubSubService.publish('user-created', userCreated, 'users');
+
+        return userCreated;
     }
 
     @ApiDocGenericGetAll('users', UserDto)
