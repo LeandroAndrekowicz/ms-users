@@ -17,4 +17,4 @@ export function ApiDocGenericPost(value: string, modelType: any) {
     ApiForbiddenResponse({ description: 'Access Denied' }),
     ApiOperation({ summary: `Create a new ${value}` }),
   );
-}
+} 
