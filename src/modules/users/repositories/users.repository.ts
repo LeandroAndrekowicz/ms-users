@@ -17,11 +17,14 @@ export class UsersRepository {
             name: user.name
         }
 
-        await this.prismaService.users.create({
+        const userCreated = await this.prismaService.users.create({
             data: formatUser
         })
 
-        return formatUser;
+        return {
+            id: userCreated.id,
+            ...formatUser
+        };
     }
 
     async findAll() {
